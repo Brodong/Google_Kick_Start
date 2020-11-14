@@ -4,6 +4,7 @@
 #include <string.h>
 using namespace std;
 
+
 // 我的思路基本是对的：动态规划思想
 // 用beauty[i][j]表示第i摞中，取前j个盘子的魅力值。
 // 用maxb[i][j]表示前i摞中取j个盘子，能够获得的最大魅力值。
