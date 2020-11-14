@@ -10,7 +10,6 @@ struct node{
     struct node *next;
 };
 
-
 node *head;
 
 void creatList(int N)
