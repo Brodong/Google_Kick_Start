@@ -4,7 +4,7 @@
 
 using namespace std;
 // 用链表来模拟，每次对最大的值进行拆分，拆分后插入新的拆分后的值
-
+// TLE了，哭泣
 struct node{
     int diff;
     struct node *next;
