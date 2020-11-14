@@ -14,6 +14,7 @@
 #include <vector>
 #include <queue>
 #include <string.h>
+#include <set>
 using namespace std;
 
 // 这一题其实很简单
@@ -32,7 +33,7 @@ using namespace std;
 // 对于第二列,从往上,分别是M-F-M,则需要在顶点M和顶点F之间增加一条边,之后在顶点F和顶点M之间增加一条边(其实,这时候已经有环了,是不稳定的)
 // 建好拓扑图后,拓扑排序,输入节点即可,如果没有将所有节点输出,则有环,输出-1
 //
-#define maxN 30+5
+#define maxN 35
 // 26个顶点
 #define maxP 26
 
@@ -40,114 +41,98 @@ using namespace std;
 char alp[maxN][maxN];
 int main()
 {
-    int t,T;
-    int R,C;
+    int t,T,R,C;
     int i,j,k;
-    int cnt; // 统计字母个数
+
     scanf("%d", &T);
     // 拓扑图
-    vector< vector<int> > G(maxP);
+    vector<int> G[maxP];
     // 入度
-    int indegree[maxP];
+    int d[maxP];
     // 拓扑排序的输出队列
-    queue<int> topsort,topsort2;
+    queue<int> tst,ans;
+    // 字母集合
+    set<int> ss;
+
     for(t=1; t<=T; t++)
     {
         scanf("%d %d", &R, &C);
         memset(alp, 0, sizeof(alp));
-        // 有一些多余的字母可能没有用,因此用-1标记
-        memset(indegree, -1, sizeof(indegree));
+        // 拓扑图和入度数组的初始化
+        for(i=0; i<maxP; i++)
+        {
+            G[i].clear();
+            d[i] = 0;
+        }
         for(i=0; i<R; i++)
             for(j=0; j<C; j++)
             { 
                 scanf(" %c", &alp[i][j]);
-                indegree[alp[i][j]-'A'] = 0;
+                ss.insert(alp[i][j]-'A');
             }
-    
-        // 统计字母个数
-        cnt = 0;
-        for(i=0; i<maxP; i++)
-            if(indegree[i] == 0)
-                cnt++;
+            
         // 建立拓扑图形
-        for(i=0; i<C; i++)
+        for(i=0; i<R-1; i++)
         {
-            for(j=R-1; j>0; j--)
+            for(j=0; j<C; j++)
             {
                 // 如果上下两个字母相同,则不添加任何边
-                if(alp[j][i] == alp[j-1][i])
+                if(alp[i][j] != alp[i+1][j])
                 {
-                }
-                else
-                {
-                    //如果不相同,需要查看是否有这个边,重复的边只保留一次
-                    for(k=0; k<G[alp[j][i]-'A'].size(); k++)
-                    {
-                        if(G[alp[j][i]-'A'][k] == alp[j-1][i]-'A')
-                            break;
-                    }
-                    if(k == G[alp[j][i]-'A'].size())
-                    {
-                        G[alp[j][i]-'A'].push_back(alp[j-1][i]-'A');
-                        // 入度加1            
-                        indegree[alp[j-1][i]-'A']++;
-                    }
+                    G[alp[i+1][j]-'A'].push_back(alp[i][j]-'A');
+                    d[alp[i][j]-'A']++;
                 }
             }
         }
-
 
         // 建好图后, 就可以拓扑排序了
         // 先添加入度为0的序列入队
         for(i=0; i<maxP; i++)
+            if(!d[i] && ss.count(i))
+                tst.push(i);
+
+        while(!tst.empty())
         {
-            if(indegree[i] == 0)
-                topsort.push(i);
-        }
-        
-        // j用来维护输入了多少个顶点
-        j=0;
-        while(!topsort.empty())
-        {
-            // 输出入度为0的顶点,由于不知道有没有环,还不呢输出
-            // printf("%c", topsort.front()+'A');
-            k = topsort.front();
-            topsort2.push(k);
-            topsort.pop();
-            j++;
+            // 输出入度为0的顶点,由于不知道有没有环,还不能输出
+            // printf("%c", tst.front()+'A');
+            k = tst.front();
+            tst.pop();
+            ans.push(k);
             // 删除该顶点出发的边,并且对应的顶点入度-1
             for(i=0; i<G[k].size(); i++)
             {
-                indegree[G[k][i]]--;
+                d[G[k][i]]--;
                 // 如果为0,则加入队列
-                if(indegree[G[k][i]] == 0)
-                    topsort.push(G[k][i]);
+                if(!d[G[k][i]])
+                    tst.push(G[k][i]);
             }
 
         }
 
-        // 记得删除所有的点
-        for(i=0; i<maxP; i++)
-        {
-            G[i].clear();
-        }
-
         printf("Case #%d: ",t);
-        if(j == cnt)
+        if(ans.size() == ss.size())
         {
-            while(!topsort2.empty())
+            while(!ans.empty())
             {
-                printf("%c", topsort2.front()+'A');
-                topsort2.pop();
+                printf("%c", ans.front()+'A');
+                ans.pop();
             }
             printf("\n");
         }
         else
             printf("-1\n");
         /* printf("Case #%d: ",t); */
-        
+        // 清除集合
+        ss.clear();
+        // 清除所有的顶点
+        for(i=0; i<maxP; i++)
+            G[i].clear();
+        // 清空tst队列、ans队列
+        while(!ans.empty())
+            ans.pop();
+        while(!tst.empty())
+            tst.pop();
     }
-    /* std::cout << "Hello world" << std::endl; */
     return 0;
 }
 
