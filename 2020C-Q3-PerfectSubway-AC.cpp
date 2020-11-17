@@ -15,7 +15,7 @@
 #include <map>
 #include <unordered_map>
 
-
+// 运行： g++ 2020C-Q3-PerfectSubway-AC.cpp -std=c++11 ; ./a.out 
 
 // 貌似是以前的组合数学问题,要求求出 子集合元素和 为完全平方数的子集数量
 // 比如一个数组a1到a10,
