@@ -14,7 +14,6 @@
 #include <string.h>
 
 using namespace std;
-
 const int maxN = 2e5+20;
 int visitor[maxN];
 
